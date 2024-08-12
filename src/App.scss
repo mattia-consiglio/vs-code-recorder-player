@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+	background-color: theme('colors.body_dark');
+	color: theme('colors.body_light');
+	@apply p-4;
+}

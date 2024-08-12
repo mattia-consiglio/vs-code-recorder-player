@@ -1,6 +1,11 @@
-import { FormEvent, useCallback, useRef } from 'react'
-import { CompleteContentRecord, ContentRecord, setContent } from './redux/reducers/playerReducer'
-import { useAppDispatch } from './redux/store'
+import { FormEvent, useCallback, useRef, useState } from 'react'
+import {
+	CompleteContentRecord,
+	ContentRecord,
+	resetPlayerState,
+	setContent,
+} from './redux/reducers/playerReducer'
+import { useAppDispatch, useAppSelector } from './redux/store'
 
 enum ChangeType {
 	CONTENT = 'content',
@@ -10,7 +15,9 @@ const allowedFileExtensions = ['srt', 'csv', 'json']
 
 function FileSelector() {
 	const fileRef = useRef<HTMLInputElement>(null)
+	const { content } = useAppSelector(state => state.player)
 	const dispatch = useAppDispatch()
+	const [fileName, setFileName] = useState('')
 
 	const removeDoubleQuotes = useCallback((text: string): string => {
 		return text.replace(/^"(.*)"$/, '$1')
@@ -36,20 +43,6 @@ function FileSelector() {
 	const getFileExtension = (file: File) => {
 		return file.name.split('.').pop() ?? ''
 	}
-
-	// const testStreamFile = async (file: File) => {
-	// 	const stream = file.stream()
-	// 	const reader = stream.getReader()
-	// 	// let result = ''
-	// 	let i = 0
-	// 	while (true) {
-	// 		const { done, value } = await reader.read()
-	// 		if (done) break
-	// 		console.log('line i:', i, 'content:', new TextDecoder().decode(value))
-	// 		i++
-	// 		// result += new TextDecoder().decode(value)
-	// 	}
-	// }
 
 	const parseSRTFile = useCallback(
 		(text: string) => {
@@ -141,6 +134,7 @@ function FileSelector() {
 	const parseFile = useCallback(
 		(e: FormEvent<HTMLInputElement>) => {
 			const file = (e.target as HTMLInputElement).files?.[0]
+			setFileName(file?.name ?? '')
 			if (!file) return
 			const extension = getFileExtension(file)
 			if (!allowedFileExtensions.includes(extension)) {
@@ -171,19 +165,31 @@ function FileSelector() {
 		[dispatch, parseCSVFile, parseJSONFile, parseSRTFile]
 	)
 	return (
-		<div>
-			<label htmlFor='liveEditorFile' className='block'>
-				Select a recording file
-			</label>
-			<input
-				type='file'
-				name='liveEditorFile'
-				id='liveEditorFile'
-				accept={allowedFileExtensions.join(',')}
-				onInput={e => parseFile(e)}
-				ref={fileRef}
-			/>
-			<button onClick={() => dispatch(setContent([]))}>Clear file</button>
+		<div className='mb-4'>
+			<div className='flex gap-4 mb-2'>
+				<label
+					htmlFor='liveEditorFile'
+					className='block border rounded cursor-pointer hover:bg-neutral-700 px-4 py-2'
+				>
+					Select a recording file
+				</label>
+				<input
+					type='file'
+					name='liveEditorFile'
+					id='liveEditorFile'
+					accept={allowedFileExtensions.join(',')}
+					onInput={e => parseFile(e)}
+					ref={fileRef}
+					className='hidden'
+				/>
+				<button
+					onClick={() => dispatch(resetPlayerState())}
+					className='border rounded cursor-pointer hover:bg-neutral-700 px-4 py-2'
+				>
+					Clear file
+				</button>
+			</div>
+			<p>Selected file: {fileName && content.length ? fileName : 'No file selected'}</p>
 		</div>
 	)
 }
