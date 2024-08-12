@@ -2,6 +2,8 @@
 
 This is a basic player that allows you play it back the recordings made with the [VS Code Recorder extension](https://marketplace.visualstudio.com/items?itemName=MattiaConsiglio.vs-code-recorder).
 
+You can host it by yourself or use the [demo](https://vs-code-recorder-player.vercel.app/)
+
 ## Installation
 
 Run the following command in your terminal:
