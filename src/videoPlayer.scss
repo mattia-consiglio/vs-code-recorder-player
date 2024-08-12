@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+$primary-color: theme('colors.primary');
+
+.video-player-wrapper {
+	position: relative;
+	user-select: none;
+
+	& > div {
+		max-width: 100%;
+		height: auto;
+	}
+
+	&:focus {
+		outline: none;
+	}
+	&:focus-visible {
+		outline: 3px solid currentColor;
+		outline-offset: 2px;
+		border-radius: 0.1rem;
+	}
+
+	.player-controls {
+		position: relative;
+		height: 100%;
+		width: 100%;
+		opacity: 1;
+		background: rgba(0, 0, 0, 0.8);
+		transition: 200ms ease-in-out;
+		transition-property: height, opacity;
+
+		.progress-bar-wrapper {
+			width: calc(100% - 20px);
+			height: 7px;
+			background-color: rgba(255, 255, 255, 0.5);
+			position: relative;
+			cursor: pointer;
+			transition: 200ms ease-in-out;
+			transition-property: height, opacity;
+			margin: 10px auto 5px auto;
+
+			.progress,
+			.circle {
+				position: absolute;
+				background-color: $primary-color;
+			}
+
+			.progress {
+				bottom: 0;
+				left: 0;
+				height: 100%;
+			}
+
+			.circle {
+				bottom: 50%;
+				transform: translate(-50%, 50%);
+				height: 0;
+				width: 0;
+				border-radius: 50%;
+				transition: all 150ms ease-in-out;
+				transition-property: height, width;
+
+				&.active {
+					height: 15px;
+					width: 15px;
+				}
+			}
+
+			.time-hover-text {
+				position: absolute;
+				bottom: 10px;
+				left: 50%;
+				transform: translateX(-50%);
+				text-shadow: 0 0 3px rgba(0, 0, 0, 0.95);
+				background-color: rgba(0, 0, 0, 0.95);
+				padding: 0 5px;
+				color: #fff;
+			}
+		}
+
+		.controls {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			position: relative;
+			width: calc(100% - 20px);
+			left: 50%;
+			transform: translateX(-50%);
+
+			.left,
+			.right {
+				display: flex;
+				align-items: center;
+				gap: 5px;
+
+				button {
+					display: inline-flex;
+					align-items: center;
+				}
+			}
+
+			.options-menu {
+				ul {
+					li {
+						cursor: pointer;
+						padding: 10px 20px;
+
+						&:hover {
+							background-color: theme('colors.neutral.900');
+						}
+					}
+				}
+			}
+		}
+	}
+
+	&:hover {
+		.progress-bar-wrapper {
+			opacity: 1;
+		}
+
+		.player-controls {
+			height: 100%;
+			opacity: 1;
+			transition-property: opacity;
+		}
+	}
+}

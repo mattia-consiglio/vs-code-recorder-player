@@ -62,6 +62,9 @@ const playerReducer = createSlice({
 		setDuration(state, action: PayloadAction<number>) {
 			state.duration = action.payload
 		},
+		resetPlayerState(state) {
+			Object.assign(state, initialState)
+		},
 	},
 })
 
@@ -72,6 +75,7 @@ export const {
 	setVideoSpeed,
 	setContent,
 	setDuration,
+	resetPlayerState,
 } = playerReducer.actions
 
 export default playerReducer.reducer
