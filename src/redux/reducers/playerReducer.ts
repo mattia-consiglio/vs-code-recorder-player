@@ -47,7 +47,7 @@ const playerReducer = createSlice({
 			state.content = content
 			state.duration = content[content.length - 1]?.endTime || 0
 		},
-		setCurrentTime(state, action: PayloadAction<number>) {
+		setCurrentTimeState(state, action: PayloadAction<number>) {
 			state.currentTime = action.payload
 		},
 		setPlayerState(state, action: PayloadAction<number>) {
@@ -56,7 +56,7 @@ const playerReducer = createSlice({
 		setPlayerIsInFocus(state, action: PayloadAction<boolean>) {
 			state.isInFocus = action.payload
 		},
-		setVideoSpeed(state, action: PayloadAction<number>) {
+		setPaybackRateState(state, action: PayloadAction<number>) {
 			state.currentSpeed = action.payload
 		},
 		setDuration(state, action: PayloadAction<number>) {
@@ -69,10 +69,10 @@ const playerReducer = createSlice({
 })
 
 export const {
-	setCurrentTime,
+	setCurrentTimeState,
 	setPlayerState,
 	setPlayerIsInFocus,
-	setVideoSpeed,
+	setPaybackRateState,
 	setContent,
 	setDuration,
 	resetPlayerState,

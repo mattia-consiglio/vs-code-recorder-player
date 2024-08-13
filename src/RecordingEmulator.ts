@@ -1,5 +1,6 @@
-import { setCurrentTime } from './redux/reducers/playerReducer'
+import { setCurrentTimeState, setPlayerState } from './redux/reducers/playerReducer'
 import { store } from './redux/store'
+import { PlayerState } from './types'
 export class RecordingEmulator {
 	private duration: number
 	private currentTime: number
@@ -8,7 +9,7 @@ export class RecordingEmulator {
 	private timer: ReturnType<typeof setInterval> | null
 
 	constructor(duration: number) {
-		this.duration = duration
+		this.duration = duration / 1000
 		this.currentTime = 0
 		this.isPlaying = false
 		this.timer = null
@@ -19,6 +20,8 @@ export class RecordingEmulator {
 		if (!this.isPlaying) {
 			this.isPlaying = true
 			this.startTimer()
+			store.dispatch(setCurrentTimeState(this.currentTime))
+			store.dispatch(setPlayerState(PlayerState.PLAYING))
 		}
 	}
 
@@ -26,6 +29,8 @@ export class RecordingEmulator {
 		if (this.isPlaying) {
 			this.isPlaying = false
 			this.stopTimer()
+			store.dispatch(setCurrentTimeState(this.currentTime))
+			store.dispatch(setPlayerState(PlayerState.PAUSED))
 		}
 	}
 
@@ -33,9 +38,9 @@ export class RecordingEmulator {
 		return this.currentTime
 	}
 
-	setCurrentTime(time: number): void {
+	setCurrentTime(time: number) {
 		this.currentTime = Math.min(Math.max(time, 0), this.duration)
-		store.dispatch(setCurrentTime(this.currentTime))
+		store.dispatch(setCurrentTimeState(this.currentTime))
 	}
 
 	getDuration() {
@@ -46,7 +51,7 @@ export class RecordingEmulator {
 		this.timer = setInterval(() => {
 			if (this.currentTime < this.duration) {
 				this.currentTime += 0.1
-				store.dispatch(setCurrentTime(this.currentTime))
+				store.dispatch(setCurrentTimeState(this.currentTime))
 			} else {
 				this.pause()
 			}

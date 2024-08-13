@@ -4,8 +4,8 @@ import CodeEditor, { CodeEditorFilesMap } from './CodeEditor'
 import { useAppSelector } from './redux/store'
 import * as Diff from 'diff'
 import { editor } from 'monaco-editor'
-import { PlayerState } from './Player'
 import { CompleteContentRecord } from './redux/reducers/playerReducer'
+import { PlayerState } from './types'
 
 interface MonacoEditorChangeOptions {
 	range: editor.IIdentifiedSingleEditOperation['range']
