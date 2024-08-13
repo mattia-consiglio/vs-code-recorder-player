@@ -28,3 +28,7 @@ Select the file you want to play back.
 ## Demo
 
 Try it out! See the [demo](https://vs-code-recorder-player.vercel.app/)
+
+## Known issues
+
+- The player has some problems switching from a file to another. I'm still working on it.

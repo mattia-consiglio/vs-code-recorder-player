@@ -182,12 +182,14 @@ function FileSelector() {
 					ref={fileRef}
 					className='hidden'
 				/>
-				<button
-					onClick={() => dispatch(resetPlayerState())}
-					className='border rounded cursor-pointer hover:bg-neutral-700 px-4 py-2'
-				>
-					Clear file
-				</button>
+				{!!content.length && (
+					<button
+						onClick={() => dispatch(resetPlayerState())}
+						className='border rounded cursor-pointer hover:bg-neutral-700 px-4 py-2'
+					>
+						Clear file
+					</button>
+				)}
 			</div>
 			<p>Selected file: {fileName && content.length ? fileName : 'No file selected'}</p>
 		</div>
