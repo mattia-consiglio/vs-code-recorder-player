@@ -4,8 +4,6 @@ import { Editor, Monaco } from '@monaco-editor/react'
 import { emmetCSS, emmetHTML, emmetJSX } from 'emmet-monaco-es'
 import { editor } from 'monaco-editor'
 import { SiCss3, SiHtml5, SiJavascript, SiTypescript } from 'react-icons/si'
-import { useAppDispatch } from './redux/store'
-import { setPlayerIsInFocus } from './redux/reducers/playerReducer'
 
 export interface MonacoFile {
 	name: string
@@ -44,10 +42,6 @@ export default function CodeEditor({
 	const monacoRef = useRef(null as unknown as Monaco)
 
 	const file = files ? files[fileName] : null
-	const dispatch = useAppDispatch()
-	// const prevChanges = useRef(changes)
-
-	// const file = fileName ? localFiles[fileName] : null
 
 	useEffect(() => {
 		setFileName(currenFile)
@@ -72,12 +66,8 @@ export default function CodeEditor({
 		monacoRef.current = monaco
 	}
 
-	function removeVideoFocus() {
-		dispatch(setPlayerIsInFocus(false))
-	}
-
 	return (
-		<div className='w-full' onClick={removeVideoFocus} onFocus={removeVideoFocus}>
+		<div className='w-full'>
 			<div className=' h-[50vh] w-full'>
 				{files && (
 					<div>

@@ -17,7 +17,6 @@ interface PlayerState {
 	content: CompleteContentRecord[]
 	currentTime: number
 	playerState: number
-	isInFocus: boolean
 	currentSpeed: number
 	duration: number
 }
@@ -26,7 +25,6 @@ const initialState: PlayerState = {
 	content: [],
 	currentTime: 0,
 	playerState: -1,
-	isInFocus: false,
 	currentSpeed: 1,
 	duration: 0,
 }
@@ -53,9 +51,6 @@ const playerReducer = createSlice({
 		setPlayerState(state, action: PayloadAction<number>) {
 			state.playerState = action.payload
 		},
-		setPlayerIsInFocus(state, action: PayloadAction<boolean>) {
-			state.isInFocus = action.payload
-		},
 		setPaybackRateState(state, action: PayloadAction<number>) {
 			state.currentSpeed = action.payload
 		},
@@ -71,7 +66,6 @@ const playerReducer = createSlice({
 export const {
 	setCurrentTimeState,
 	setPlayerState,
-	setPlayerIsInFocus,
 	setPaybackRateState,
 	setContent,
 	setDuration,

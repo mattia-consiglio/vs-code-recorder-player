@@ -6,7 +6,7 @@ import {
 	IoPlaySharp,
 } from 'react-icons/io5'
 import { MdOutlineCheck } from 'react-icons/md'
-import { useAppDispatch, useAppSelector } from './redux/store'
+import { useAppSelector } from './redux/store'
 import { RecordingEmulator } from './RecordingEmulator'
 import { PlayerState } from './types'
 
@@ -29,11 +29,8 @@ function formatPercentageTime(percentage: number, duration: number) {
 }
 
 export default function Controls({ player, seekTo, changeSpeed }: Readonly<ControlsProps>) {
-	const { playerState, isInFocus, currentSpeed, currentTime } = useAppSelector(
-		state => state.player
-	)
+	const { playerState, currentSpeed, currentTime } = useAppSelector(state => state.player)
 	const duration = useAppSelector(state => state.player.duration) / 1000
-	const dispatch = useAppDispatch()
 	const playerControls = useRef<HTMLDivElement>(null)
 	const [currentTimeText, setCurrentTimeText] = useState(
 		formatPercentageTime(currentTime, duration)
@@ -67,12 +64,12 @@ export default function Controls({ player, seekTo, changeSpeed }: Readonly<Contr
 		[duration, player, seekTo]
 	)
 
-	const closeOpenedOptions = () => {
+	const closeOpenedOptions = useCallback(() => {
 		if (isOptionsOpenRef.current) {
 			setIsOptionsOpen(false)
 			isOptionsOpenRef.current = false
 		}
-	}
+	}, [])
 
 	// update percentage on mouse hover
 	const handleMouseMove = useCallback(
@@ -88,24 +85,13 @@ export default function Controls({ player, seekTo, changeSpeed }: Readonly<Contr
 		[duration, seek]
 	)
 
-	function handleMouseLeave(e: React.MouseEvent<HTMLDivElement>) {
+	const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
 		e.stopPropagation()
 		isProgressBarHovering.current = false
 		if (!isDragging.current) {
 			setIsHovering(false)
 		}
-	}
-
-	function handleMouseDown(e: React.MouseEvent<HTMLDivElement>) {
-		e.stopPropagation()
-		isDragging.current = true
-		isDragged.current = true
-		const nativeEvent = e.nativeEvent
-		handleMouseMove(nativeEvent)
-		closeOpenedOptions()
-		window.addEventListener('mousemove', handleMouseMove)
-		window.addEventListener('mouseup', handleMouseUp)
-	}
+	}, [])
 
 	const handleMouseUp = useCallback(() => {
 		setIsHovering(false)
@@ -115,59 +101,77 @@ export default function Controls({ player, seekTo, changeSpeed }: Readonly<Contr
 		seek()
 	}, [handleMouseMove, seek])
 
+	const handleMouseDown = useCallback(
+		(e: React.MouseEvent<HTMLDivElement>) => {
+			e.stopPropagation()
+			isDragging.current = true
+			isDragged.current = true
+			const nativeEvent = e.nativeEvent
+			handleMouseMove(nativeEvent)
+			closeOpenedOptions()
+			window.addEventListener('mousemove', handleMouseMove)
+			window.addEventListener('mouseup', handleMouseUp)
+		},
+		[closeOpenedOptions, handleMouseMove, handleMouseUp]
+	)
+
 	const handleMouseOver = useCallback(() => {
 		isProgressBarHovering.current = true
 	}, [])
 
 	const playPause = useCallback(() => {
+		console.log('playPause')
 		if (playerState === PlayerState.PLAYING) {
 			player?.pause()
 		} else {
 			player?.play()
 		}
-	}, [dispatch, player, playerState])
+	}, [player, playerState])
 
-	function seekBackward() {
+	const seekBackward = useCallback(() => {
 		if (player) {
 			seek(Math.max(player.getCurrentTime() - 5, 0))
 		}
-	}
-	function seekForward() {
+	}, [player, seek])
+	const seekForward = useCallback(() => {
 		if (player) {
 			seek(Math.min(player.getCurrentTime() + 5, duration))
 		}
-	}
+	}, [duration, player, seek])
 
-	function handleKeydown(e: KeyboardEvent) {
-		if (!playerControls.current) return
-		if (!isInFocus) return
-		switch (e.key) {
-			case 'ArrowRight':
-			case 'j':
-			case 'J':
-				e.preventDefault()
-				seekForward()
-				break
-			case 'ArrowLeft':
-			case 'l':
-			case 'L':
-				e.preventDefault()
-				seekBackward()
-				break
-			case ' ':
-			case 'Space':
-			case 'k':
-			case 'K':
-				e.preventDefault()
-				playPause()
-				break
-			case 'o':
-				e.preventDefault()
-				setIsOptionsOpen(true)
-				isOptionsOpenRef.current = true
-				break
-		}
-	}
+	const handleKeydown = useCallback(
+		(e: KeyboardEvent) => {
+			console.log(e.key)
+			if (!playerControls.current) return
+			switch (e.key) {
+				case 'ArrowRight':
+				case 'l':
+				case 'L':
+					e.preventDefault()
+					seekForward()
+					break
+				case 'ArrowLeft':
+				case 'j':
+				case 'J':
+					e.preventDefault()
+					seekBackward()
+					break
+				case ' ':
+				case 'Space':
+				case 'k':
+				case 'K':
+					e.preventDefault()
+					playPause()
+					break
+				case 'o':
+					e.preventDefault()
+					setIsOptionsOpen(true)
+					isOptionsOpenRef.current = true
+					break
+			}
+		},
+		[playPause, seekBackward, seekForward]
+	)
 
 	useEffect(() => {
 		document.addEventListener('keydown', handleKeydown)
@@ -175,7 +179,7 @@ export default function Controls({ player, seekTo, changeSpeed }: Readonly<Contr
 		return () => {
 			document.removeEventListener('keydown', handleKeydown)
 		}
-	})
+	}, [handleKeydown])
 
 	const goBackOption = useMemo(
 		() => (
